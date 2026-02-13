@@ -17,7 +17,7 @@
     <description>A vanilla Java library that allow you to deploy a Crowdin compatible over-the-air distribution
         service.
     </description>
-    <url>https://github.com/Ghost-chu/crowdincopydeploy</url>
+    <url>https://github.com/QuickShop-Community/CrowdinCopyDeploy</url>
 
 
     <developers>
@@ -31,22 +31,22 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:Ghost-chu/crowdincopydeploy.git</connection>
-        <developerConnection>scm:git:git@github.com:Ghost-chu/crowdincopydeploy.git</developerConnection>
-        <url>https://github.com/Ghost-chu/crowdincopydeploy</url>
+        <connection>scm:git:git@github.com:QuickShop-Community/CrowdinCopyDeploy.git</connection>
+        <developerConnection>scm:git:git@github.com:QuickShop-Community/CrowdinCopyDeploy.git</developerConnection>
+        <url>https://github.com/QuickShop-Community/CrowdinCopyDeploy</url>
         <tag>HEAD</tag>
     </scm>
 
     <licenses>
         <license>
             <name>The MIT License</name>
-            <url>https://github.com/Ghost-chu/crowdincopydeploy/blob/master/LICENSE</url>
+            <url>https://github.com/QuickShop-Community/CrowdinCopyDeploy/blob/master/LICENSE</url>
         </license>
     </licenses>
 
     <ciManagement>
         <system>GitHub Actions</system>
-        <url>https://github.com/Ghost-chu/crowdincopydeploy/actions/workflows/maven.yml</url>
+        <url>https://github.com/QuickShop-Community/CrowdinCopyDeploy/actions/workflows/maven.yml</url>
     </ciManagement>
 
 

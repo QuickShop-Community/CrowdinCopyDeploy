@@ -56,9 +56,9 @@ public class CrowdinAPI {
 
     private void auth() {
         LOG.info("Authenticating to Crowdin via API v2...");
-        Credentials credentials = new Credentials(token, null);
+        final Credentials credentials = new Credentials(token, null);
         client = new Client(credentials);
-        User user = client.getUsersApi().getAuthenticatedUser().getData();
+        final User user = client.getUsersApi().getAuthenticatedUser().getData();
         LOG.info("Logged in with user {} (uid={}).", user.getUsername(), user.getId());
         Unirest.config()
                 .addDefaultHeader("Content-Type", "application/json")
@@ -83,15 +83,15 @@ public class CrowdinAPI {
 
     }
 
-    public void buildTranslations(@NotNull File uncompressTo) {
+    public void buildTranslations(@NotNull final File uncompressTo) {
         LOG.info("Building translation for languages: {}", targetLanguageIds);
-        CrowdinTranslationCreateProjectBuildForm form = generateTranslationBuildForm(branchId, targetLanguageIds);
-        long buildId = client.getTranslationsApi()
+        final CrowdinTranslationCreateProjectBuildForm form = generateTranslationBuildForm(branchId, targetLanguageIds);
+        final long buildId = client.getTranslationsApi()
                 .buildProjectTranslation(projectId, form)
                 .getData()
                 .getId();
         LOG.info("Translation build started with build id: {}", buildId);
-        TranslationBuildMonitorTask work = new TranslationBuildMonitorTask(client, projectId, buildId);
+        final TranslationBuildMonitorTask work = new TranslationBuildMonitorTask(client, projectId, buildId);
         work.run();
         if (!work.getLastStatus().equalsIgnoreCase("finished")) {
             throw new IllegalStateException("Incomplete translation build: " + work.getLastStatus());
@@ -101,8 +101,8 @@ public class CrowdinAPI {
     }
 
     @NotNull
-    private CrowdinTranslationCreateProjectBuildForm generateTranslationBuildForm(long branchId, @NotNull List<String> languageIds) {
-        CrowdinTranslationCreateProjectBuildForm form = new CrowdinTranslationCreateProjectBuildForm();
+    private CrowdinTranslationCreateProjectBuildForm generateTranslationBuildForm(final long branchId, @NotNull final List<String> languageIds) {
+        final CrowdinTranslationCreateProjectBuildForm form = new CrowdinTranslationCreateProjectBuildForm();
         form.setExportApprovedOnly(false);
         form.setSkipUntranslatedFiles(false);
         form.setSkipUntranslatedFiles(false);
@@ -113,10 +113,10 @@ public class CrowdinAPI {
         return form;
     }
 
-    private void downloadTranslations(long buildId, @NotNull File uncompressTo) {
-        File saveTo = new File(UUID.randomUUID() + ".zip");
+    private void downloadTranslations(final long buildId, @NotNull final File uncompressTo) {
+        final File saveTo = new File(UUID.randomUUID() + ".zip");
         LOG.info("Getting the project translations download URL...");
-        DownloadLink link = client.getTranslationsApi()
+        final DownloadLink link = client.getTranslationsApi()
                 .downloadProjectTranslations(projectId, buildId)
                 .getData();
         LOG.info("Downloading translations zip from {} to {}... (expires in {})", link.getUrl(), saveTo.getPath(), link.getExpireIn());
@@ -126,16 +126,16 @@ public class CrowdinAPI {
     }
 
     @NotNull
-    public Map<String, List<String>> manifestGenerateContentSections(@NotNull Map<String, Object> languageMappingRaw) {
-        Map<String, Map<String, String>> mapping = bakeLanguageMapping(languageMappingRaw);
-        Map<String, List<String>> map = new LinkedHashMap<>();
+    public Map<String, List<String>> manifestGenerateContentSections(@NotNull final Map<String, Object> languageMappingRaw) {
+        final Map<String, Map<String, String>> mapping = bakeLanguageMapping(languageMappingRaw);
+        final Map<String, List<String>> map = new LinkedHashMap<>();
 
-        for (String locale : ProgressBar.wrap(targetLanguageIds, "Manifest paths")) {
+        for (final String locale : ProgressBar.wrap(targetLanguageIds, "Manifest paths")) {
             //LOG.info("Generating for {} locale...", locale);
-            List<String> list = new ArrayList<>();
-            for (String file : manifestGenerateFiles()) {
-                String mappedCode = getMappedLanguageCode(locale, localeFormat, mapping);
-                String path = "/content" + file.replace("%locale%", mappedCode);
+            final List<String> list = new ArrayList<>();
+            for (final String file : manifestGenerateFiles()) {
+                final String mappedCode = getMappedLanguageCode(locale, localeFormat, mapping);
+                final String path = "/content" + file.replace("%locale%", mappedCode);
                 list.add(path);
             }
             map.put(locale, list);
@@ -144,9 +144,9 @@ public class CrowdinAPI {
     }
 
     @NotNull
-    private Map<String, Map<String, String>> bakeLanguageMapping(@NotNull Map<String, Object> languageMappingRaw) {
-        Map<String, Map<String, String>> map = new LinkedHashMap<>();
-        for (Map.Entry<String, Object> entry : ProgressBar.wrap(languageMappingRaw.entrySet(), "Bake language mapping")) {
+    private Map<String, Map<String, String>> bakeLanguageMapping(@NotNull final Map<String, Object> languageMappingRaw) {
+        final Map<String, Map<String, String>> map = new LinkedHashMap<>();
+        for (final Map.Entry<String, Object> entry : ProgressBar.wrap(languageMappingRaw.entrySet(), "Bake language mapping")) {
             //noinspection unchecked
             map.put(entry.getKey(), (Map<String, String>) entry.getValue());
         }
@@ -155,15 +155,15 @@ public class CrowdinAPI {
 
     @NotNull
     public List<String> manifestGenerateFiles() {
-        List<String> output = new ArrayList<>();
-        HttpResponse<JsonNode> response = Unirest.get(API_ROOT + "/projects/" + projectId + "/files")
+        final List<String> output = new ArrayList<>();
+        final HttpResponse<JsonNode> response = Unirest.get(API_ROOT + "/projects/" + projectId + "/files")
                 .asJson();
         if (!response.isSuccess())
             throw new UnirestRequestException("Getting files", response);
-        JSONArray files = response.getBody().getObject().getJSONArray("data");
+        final JSONArray files = response.getBody().getObject().getJSONArray("data");
         for (int i = 0; i < files.length(); i++) {
-            JSONObject singleFile = files.getJSONObject(i).getJSONObject("data");
-            String name = singleFile.getString("name");
+            final JSONObject singleFile = files.getJSONObject(i).getJSONObject("data");
+            final String name = singleFile.getString("name");
             if (!singleFile.getString("status").equalsIgnoreCase("active")) {
                 LOG.info("Skipping {} because it status is {}", name, singleFile.getString("status"));
                 continue;
@@ -172,8 +172,8 @@ public class CrowdinAPI {
                 LOG.info("Skipping {} because it doesn't have exportOptions field.", name);
                 continue;
             }
-            String pattern = singleFile.getJSONObject("exportOptions").getString("exportPattern");
-            String path = "/" + branchName + pattern.replace("%original_file_name%", name);
+            final String pattern = singleFile.getJSONObject("exportOptions").getString("exportPattern");
+            final String path = "/" + branchName + pattern.replace("%original_file_name%", name);
             output.add(path);
         }
         return output;
@@ -181,8 +181,8 @@ public class CrowdinAPI {
 
     @SuppressWarnings("SameParameterValue")
     @NotNull
-    private String getMappedLanguageCode(@NotNull String locale, @NotNull String localeFormat, @NotNull Map<String, Map<String, String>> languageMapping) {
-        Map<String, String> map = languageMapping.get(locale);
+    private String getMappedLanguageCode(@NotNull final String locale, @NotNull final String localeFormat, @NotNull final Map<String, Map<String, String>> languageMapping) {
+        final Map<String, String> map = languageMapping.get(locale);
         if (map == null) return locale;
         return map.getOrDefault(localeFormat, locale);
     }
@@ -194,7 +194,7 @@ public class CrowdinAPI {
 
     @NotNull
     public Map<String, Object> manifestGenerateLanguageMapping() {
-        HttpResponse<JsonNode> response = Unirest.get(API_ROOT + "/projects/" + projectId)
+        final HttpResponse<JsonNode> response = Unirest.get(API_ROOT + "/projects/" + projectId)
                 .asJson();
         if (!response.isSuccess())
             throw new UnirestRequestException("Getting language mapping", response);

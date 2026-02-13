@@ -36,11 +36,17 @@ jobs:
       with:
         args: uploads3
       env:
+        #types: bunny, aws
+        STORAGE_HANDLER: "bunny"
         CROWDIN_ACCESS_TOKEN: ${{ secrets.CROWDIN_ACCESS_TOKEN }}
         CROWDIN_PROJECT_BRANCH_ID: ${{ secrets.CROWDIN_BRANCH_ID }}
         CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
         LOCALE_FORMAT: "locale"
         #DEPLOY_PATH: './deploy-prod'
+        BUNNY_ZONE: ${{ secrets.BUNNY_ZONE }}
+        BUNNY_API_KEY: ${{ secrets.BUNNY_API_KEY }}
+        BUNNY_MAIN_ZONE: ${{ secrets.BUNNY_MAIN_ZONE }}
+        BUNNY_DEST: ${{ secrets.BUNNY_DEST }}
         AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
